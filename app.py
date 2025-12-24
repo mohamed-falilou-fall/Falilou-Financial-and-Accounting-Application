@@ -7,28 +7,20 @@ import importlib.util
 # ==============================
 st.set_page_config(
     page_title="Application Financière – Planification Stratégique",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ==============================
-# STYLE THEME JAUNE MOUTARDE
+# THEME COULEUR JAUNE MOUTARDE
 # ==============================
 st.markdown(
     """
     <style>
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #D4A017;  /* jaune moutarde */
-    }
-    /* Boutons */
-    .stButton>button {
-        background-color: #D4A017;
-        color: white;
-    }
-    /* Header principal */
-    .css-18e3th9 {
-        background-color: #FFF8DC;  /* fond clair pour le header */
-    }
+    /* Couleur du sidebar */
+    .css-1d391kg {background-color: #d4af37 !important;}
+    /* Couleur du titre principal */
+    .stApp h1 {color: #d4af37;}
     </style>
     """,
     unsafe_allow_html=True
@@ -69,17 +61,15 @@ selection = st.sidebar.radio("Choisir un module", list(pages.keys()))
 # ==============================
 # CHARGEMENT SÉCURISÉ DES PAGES
 # ==============================
-BASE_DIR = Path(__file__).parent         # dossier où se trouve app.py
-PAGE_DIR = BASE_DIR / "pages"            # dossier ./pages
-
-page_path = PAGE_DIR / pages[selection]  # chemin complet vers le script sélectionné
+BASE_DIR = Path(__file__).parent
+PAGE_DIR = BASE_DIR / "pages"
+page_path = PAGE_DIR / pages[selection]
 
 if page_path.exists():
     spec = importlib.util.spec_from_file_location("page_module", page_path)
     page_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(page_module)
 
-    # Vérifie que le module contient la fonction run()
     if hasattr(page_module, "run"):
         page_module.run()
     else:
