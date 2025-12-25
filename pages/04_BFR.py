@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
 def run():
     st.title("Besoin en Fonds de Roulement (BFR)")
@@ -158,6 +157,8 @@ def run():
     # =========================
     # Graphique
     # =========================
+    import plotly.express as px
+    
     fig = px.bar(
         df.iloc[-1:],  # uniquement BFR
         x="Rubrique",
