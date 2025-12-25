@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
 def run():
     st.title("Plan de Trésorerie (3 ans)")
@@ -64,5 +63,7 @@ def run():
         }))
 
         # Graphique
+        import plotly.express as px
+        
         fig = px.line(df, x="Mois", y="Solde cumulée", title=f"Évolution de la trésorerie - {annee}")
         st.plotly_chart(fig)
