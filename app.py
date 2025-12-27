@@ -3,6 +3,8 @@ import streamlit as st
 from pathlib import Path
 import importlib.util
 
+from database import init_db
+
 # ==============================
 # CONFIGURATION PAGE
 # ==============================
