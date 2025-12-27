@@ -157,7 +157,7 @@ def run():
     # =========================
     # Graphique
     # =========================
-    from plotly import express as px
+    import plotly.express as px
     
     fig = px.bar(
         df.iloc[-1:],  # uniquement BFR
