@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
+from database import save_module_data  # <-- import de la fonction de sauvegarde
 
 def run():
     st.title("HYPOTHÈSES D'ACTIVITÉ")
@@ -82,6 +83,9 @@ def run():
         submitted = st.form_submit_button("Enregistrer")
 
         if submitted:
+            # =========================
+            # MISE À JOUR SESSION
+            # =========================
             st.session_state["hypotheses"].update({
                 "panier": panier,
                 "clients": clients,
@@ -92,4 +96,20 @@ def run():
                 "stock": stock,
                 "loyer": loyer
             })
+
+            # =========================
+            # SAUVEGARDE AUTOMATIQUE EN BASE
+            # =========================
+            save_module_data(
+                module="hypotheses",
+                annee="1",
+                data=st.session_state["hypotheses"]
+            )
+
             st.success("Hypothèses enregistrées avec succès")
+
+    # =========================
+    # BOUTON IMPRIMER LA PAGE
+    # =========================
+    if st.button("Imprimer la page"):
+        st.write("<script>window.print();</script>", unsafe_allow_html=True)
