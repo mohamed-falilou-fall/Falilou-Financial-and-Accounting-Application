@@ -63,7 +63,7 @@ def run():
         }))
 
         # Graphique
-        from plotly import express as px
+        import plotly.express as px
         
         fig = px.line(df, x="Mois", y="Solde cumulée", title=f"Évolution de la trésorerie - {annee}")
         st.plotly_chart(fig)
