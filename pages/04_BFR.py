@@ -155,17 +155,28 @@ def run():
     }))
 
     # =========================
-# Graphique simple (Streamlit natif)
-# =========================
-st.subheader("BFR par année")
+    # Graphique moderne (Altair)
+    # =========================
+    import altair as alt
 
-df_bfr = pd.DataFrame({
-    "BFR": [
-        resultats["Année 1"]["BFR"],
-        resultats["Année 2"]["BFR"],
-        resultats["Année 3"]["BFR"],
-    ]
-}, index=["Année 1", "Année 2", "Année 3"])
+    df_bfr = df[df["Rubrique"] == "BESOIN EN FONDS DE ROULEMENT (BFR)"] \
+        .melt(id_vars="Rubrique", var_name="Année", value_name="Montant")
 
-st.bar_chart(df_bfr)
+    chart = (
+        alt.Chart(df_bfr)
+        .mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
+        .encode(
+            x=alt.X("Année:N", title="Année"),
+            y=alt.Y("Montant:Q", title="BFR (F CFA)"),
+            tooltip=[
+                alt.Tooltip("Année:N"),
+                alt.Tooltip("Montant:Q", format=",.3f")
+            ]
+        )
+        .properties(
+            title="BFR par année",
+            height=350
+        )
+    )
 
+    st.altair_chart(chart, use_container_width=True)
