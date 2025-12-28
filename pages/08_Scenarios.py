@@ -8,7 +8,6 @@ matplotlib.use("Agg")
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
 
 def run():
@@ -86,12 +85,15 @@ def run():
         ]
     })
 
-    fig = px.bar(
-        df_compare,
-        x="Scénario",
-        y="Résultat (F CFA)",
-        color="Scénario",
-        title="Comparaison des résultats par scénario"
-    )
+    # =========================
+# Graphique simple (Streamlit natif)
+# =========================
+st.subheader("Comparaison des résultats par scénario")
 
-    st.plotly_chart(fig, use_container_width=True)
+df_graph = (
+    df_compare
+    .set_index("Scénario")[["Résultat (F CFA)"]]
+)
+
+st.bar_chart(df_graph)
+
