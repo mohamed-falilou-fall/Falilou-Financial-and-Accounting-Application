@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
+
+# =========================
+# Sécurisation globale (anti-erreur matplotlib)
+# =========================
+import matplotlib
+matplotlib.use("Agg")
+
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+
 
 def run():
     st.title("Besoin en Fonds de Roulement (BFR)")
@@ -18,15 +27,16 @@ def run():
         # =========================
         CA = st.number_input(
             "Chiffre d'affaires HT",
-            value=hyp.get("Chiffre d'affaires HT (1 x 2 x 3)", 0.0) if annee=="Année 1" else 0.0,
+            value=hyp.get("Chiffre d'affaires HT (1 x 2 x 3)", 0.0) if annee == "Année 1" else 0.0,
             format="%.3f",
             key=f"ca_bfr_{annee}"
         )
 
         st.markdown("**Stocks et délais**")
+
         achats_pct_CA = st.number_input(
             "Achats consommés + sous-traitance (% du CA HT)",
-            value=60.0 if annee=="Année 1" else 0.0,
+            value=60.0 if annee == "Année 1" else 0.0,
             format="%.3f",
             key=f"achats_pct_{annee}"
         ) / 100.0
@@ -62,7 +72,7 @@ def run():
         )
 
         # =========================
-        # Calculs
+        # Calculs BFR
         # =========================
         achats = CA * achats_pct_CA
 
@@ -77,7 +87,7 @@ def run():
         dettes_fournisseurs = achats * delai_fournisseurs / 12
 
         total_emplois = total_stock + creances_clients
-        total_ressources = dettes_fournisseurs  # pas d'acomptes clients pour simplification
+        total_ressources = dettes_fournisseurs
         BFR = total_emplois - total_ressources
 
         resultats[annee] = {
@@ -94,7 +104,7 @@ def run():
         }
 
     # =========================
-    # Tableau final
+    # Tableau BFR
     # =========================
     df = pd.DataFrame({
         "Rubrique": [
@@ -155,14 +165,14 @@ def run():
     }))
 
     # =========================
-    # Graphique
+    # Graphique Plotly (BFR)
     # =========================
-    import plotly.express as px
-    
     fig = px.bar(
-        df.iloc[-1:],  # uniquement BFR
+        df.iloc[-1:],
         x="Rubrique",
         y=["Année 1", "Année 2", "Année 3"],
-        title="BFR par année"
+        title="BFR par année",
+        barmode="group"
     )
-    st.plotly_chart(fig)
+
+    st.plotly_chart(fig, use_container_width=True)
