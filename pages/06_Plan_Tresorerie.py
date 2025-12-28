@@ -92,13 +92,11 @@ def run():
             "Solde cumulée": "{:,.3f} F CFA"
         }))
 
-        # Graphique (Plotly inchangé)
-        import plotly.express as px
+        # =========================
+# Graphique simple (Streamlit natif)
+# =========================
+st.subheader(f"Évolution de la trésorerie - {annee}")
 
-        fig = px.line(
-            df,
-            x="Mois",
-            y="Solde cumulée",
-            title=f"Évolution de la trésorerie - {annee}"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+df_graph = df.set_index("Mois")[["Solde cumulée"]]
+
+st.line_chart(df_graph)
