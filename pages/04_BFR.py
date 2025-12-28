@@ -18,7 +18,7 @@ def run():
         # =========================
         CA = st.number_input(
             "Chiffre d'affaires HT",
-            value=hyp.get("Chiffre d'affaires HT (1 x 2 x 3)", 0.0) if annee=="Année 1" else 0.0,
+            value=hyp.get("Chiffre d'affaires HT (1 x 2 x 3)", 0.0) if annee == "Année 1" else 0.0,
             format="%.3f",
             key=f"ca_bfr_{annee}"
         )
@@ -26,7 +26,7 @@ def run():
         st.markdown("**Stocks et délais**")
         achats_pct_CA = st.number_input(
             "Achats consommés + sous-traitance (% du CA HT)",
-            value=60.0 if annee=="Année 1" else 0.0,
+            value=60.0 if annee == "Année 1" else 0.0,
             format="%.3f",
             key=f"achats_pct_{annee}"
         ) / 100.0
@@ -77,7 +77,7 @@ def run():
         dettes_fournisseurs = achats * delai_fournisseurs / 12
 
         total_emplois = total_stock + creances_clients
-        total_ressources = dettes_fournisseurs  # pas d'acomptes clients pour simplification
+        total_ressources = dettes_fournisseurs
         BFR = total_emplois - total_ressources
 
         resultats[annee] = {
@@ -155,14 +155,28 @@ def run():
     }))
 
     # =========================
-    # Graphique
+    # Graphique moderne (Altair)
     # =========================
-    import plotly.express as px
-    
-    fig = px.bar(
-        df.iloc[-1:],  # uniquement BFR
-        x="Rubrique",
-        y=["Année 1", "Année 2", "Année 3"],
-        title="BFR par année"
+    import altair as alt
+
+    df_bfr = df[df["Rubrique"] == "BESOIN EN FONDS DE ROULEMENT (BFR)"] \
+        .melt(id_vars="Rubrique", var_name="Année", value_name="Montant")
+
+    chart = (
+        alt.Chart(df_bfr)
+        .mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
+        .encode(
+            x=alt.X("Année:N", title="Année"),
+            y=alt.Y("Montant:Q", title="BFR (F CFA)"),
+            tooltip=[
+                alt.Tooltip("Année:N"),
+                alt.Tooltip("Montant:Q", format=",.3f")
+            ]
+        )
+        .properties(
+            title="BFR par année",
+            height=350
+        )
     )
-    st.plotly_chart(fig)
+
+    st.altair_chart(chart, use_container_width=True)
