@@ -5,6 +5,7 @@ import importlib.util
 
 from database import init_db
 
+# Crée la base et la table si elles n'existent pas
 init_db()
 
 
