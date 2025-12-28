@@ -40,16 +40,16 @@ def init_db():
 # SAUVEGARDE DONNÉES MODULE
 # ==============================
 def save_module_data(module: str, annee: str, data: dict):
+    init_db()  # 🔥 CORRECTION CRITIQUE
+
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Supprimer les anciennes données du module / année
     cursor.execute("""
         DELETE FROM donnees_financieres
         WHERE module = ? AND annee = ?
     """, (module, annee))
 
-    # Insérer les nouvelles valeurs
     for cle, valeur in data.items():
         cursor.execute("""
             INSERT INTO donnees_financieres (module, annee, cle, valeur)
@@ -63,6 +63,8 @@ def save_module_data(module: str, annee: str, data: dict):
 # LECTURE DONNÉES MODULE
 # ==============================
 def load_module_data(module: str, annee: str) -> dict:
+    init_db()
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -80,6 +82,8 @@ def load_module_data(module: str, annee: str) -> dict:
 # LECTURE TOUTES DONNÉES
 # ==============================
 def load_all_data() -> dict:
+    init_db()
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -100,6 +104,8 @@ def load_all_data() -> dict:
 # SUPPRESSION MODULE / ANNÉE
 # ==============================
 def delete_module_data(module: str, annee: str):
+    init_db()
+
     conn = get_connection()
     cursor = conn.cursor()
 
