@@ -8,8 +8,6 @@ def run():
     st.title("Export & restitution professionnelle")
 
     st.markdown("### Synthèse financière")
-
-    # Récupération des données depuis session_state
     hyp = st.session_state.get("hypotheses", {})
     cr = st.session_state.get("compte_resultat", {}).get("Année 1", {})
 
@@ -25,7 +23,6 @@ def run():
 
     st.dataframe(df_synthese.style.format({"Valeur (F CFA)": "{:,.3f}"}))
 
-    # Graphique de synthèse
     fig = px.bar(df_synthese, x="Indicateur", y="Valeur (F CFA)",
                  title="Synthèse financière – vue investisseur")
     st.plotly_chart(fig, use_container_width=True)
@@ -39,7 +36,6 @@ def run():
         return output.getvalue()
 
     excel_data = export_excel(df_synthese)
-
     st.download_button(label="Télécharger le rapport Excel",
                        data=excel_data,
                        file_name="Synthese_Financiere.xlsx",
@@ -49,3 +45,11 @@ def run():
     st.markdown("### Export PDF")
     st.info("Le PDF peut être généré à partir de cette synthèse via ReportLab ou WeasyPrint (HTML → PDF).")
     st.success("Module d’export prêt pour restitution investisseurs / banques")
+
+    # Sauvegarde synthèse dans session_state
+    st.session_state["synthese_financiere"] = {
+        "Chiffre_affaires": chiffre_affaires,
+        "Charges": charges,
+        "RN": RN,
+        "CAF": CAF
+    }
