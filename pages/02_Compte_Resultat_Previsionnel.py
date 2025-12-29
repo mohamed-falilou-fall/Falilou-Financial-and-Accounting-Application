@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 
@@ -9,16 +8,7 @@ def calcul_compte_resultat(CA, achats, loyer, honoraires, publicite,
                            impots_benef, dividendes):
 
     marge_brute = CA - achats
-
-    valeur_ajoutee = (
-        marge_brute
-        - loyer
-        - honoraires
-        - publicite
-        - credit_bail
-        - autres_charges
-    )
-
+    valeur_ajoutee = marge_brute - loyer - honoraires - publicite - credit_bail - autres_charges
     ebe = valeur_ajoutee - salaires - impots_taxes
     rex = ebe - amortissements - provisions
     rcai = rex - frais_financiers + produits_financiers
@@ -45,7 +35,8 @@ def calcul_compte_resultat(CA, achats, loyer, honoraires, publicite,
 def run():
     st.title("COMPTE DE RÉSULTAT PRÉVISIONNEL (3 ANS)")
 
-    hyp = st.session_state.get("hypotheses", {})
+    hyp = st.session_state.get("hypotheses_saved", {})
+    cr_saved = st.session_state.get("compte_resultat", {})
 
     st.info("Les données de l’Année 1 sont pré-alimentées depuis les hypothèses.")
 
@@ -57,38 +48,25 @@ def run():
 
         CA = st.number_input(
             "Chiffre d'affaires HT",
-            value=hyp.get("ca_ht", 0.0) if annee == "Année 1" else 0.0,
+            value=cr_saved.get(annee, {}).get("CA", hyp.get("ca_ht", 0.0)) if annee=="Année 1" else cr_saved.get(annee, {}).get("CA", 0.0),
             format="%.3f",
             key=f"ca_{annee}"
         )
 
-        achats = st.number_input("Achats / stock", 0.0, format="%.3f", key=f"ach_{annee}")
-        loyer = st.number_input(
-            "Loyer",
-            hyp.get("loyer", 0.0) if annee == "Année 1" else 0.0,
-            format="%.3f",
-            key=f"loy_{annee}"
-        )
-        honoraires = st.number_input("Honoraires", 0.0, format="%.3f", key=f"hon_{annee}")
-        publicite = st.number_input("Publicité", 0.0, format="%.3f", key=f"pub_{annee}")
-        credit_bail = st.number_input("Crédit-bail", 0.0, format="%.3f", key=f"cb_{annee}")
-        autres_charges = st.number_input("Autres charges", 0.0, format="%.3f", key=f"aut_{annee}")
-
-        salaires = st.number_input(
-            "Salaires",
-            hyp.get("salaires_indiv", 0.0) + hyp.get("salaires_emp", 0.0)
-            if annee == "Année 1" else 0.0,
-            format="%.3f",
-            key=f"sal_{annee}"
-        )
-
-        impots_taxes = st.number_input("Impôts & taxes", 0.0, format="%.3f", key=f"it_{annee}")
-        amortissements = st.number_input("Amortissements", 0.0, format="%.3f", key=f"am_{annee}")
-        provisions = st.number_input("Provisions", 0.0, format="%.3f", key=f"prov_{annee}")
-        frais_financiers = st.number_input("Frais financiers", 0.0, format="%.3f", key=f"ff_{annee}")
-        produits_financiers = st.number_input("Produits financiers", 0.0, format="%.3f", key=f"pf_{annee}")
-        impots_benef = st.number_input("Impôts sur bénéfices", 0.0, format="%.3f", key=f"ib_{annee}")
-        dividendes = st.number_input("Dividendes", 0.0, format="%.3f", key=f"div_{annee}")
+        achats = st.number_input("Achats / stock", cr_saved.get(annee, {}).get("Achats",0.0), format="%.3f", key=f"ach_{annee}")
+        loyer = st.number_input("Loyer", cr_saved.get(annee, {}).get("Loyer", hyp.get("loyer",0.0)), format="%.3f", key=f"loy_{annee}")
+        honoraires = st.number_input("Honoraires", cr_saved.get(annee, {}).get("Honoraires",0.0), format="%.3f", key=f"hon_{annee}")
+        publicite = st.number_input("Publicité", cr_saved.get(annee, {}).get("Publicite",0.0), format="%.3f", key=f"pub_{annee}")
+        credit_bail = st.number_input("Crédit-bail", cr_saved.get(annee, {}).get("Credit_bail",0.0), format="%.3f", key=f"cb_{annee}")
+        autres_charges = st.number_input("Autres charges", cr_saved.get(annee, {}).get("Autres_charges",0.0), format="%.3f", key=f"aut_{annee}")
+        salaires = st.number_input("Salaires", cr_saved.get(annee, {}).get("Salaires", hyp.get("salaires_indiv",0.0)+hyp.get("salaires_emp",0.0)), format="%.3f", key=f"sal_{annee}")
+        impots_taxes = st.number_input("Impôts & taxes", cr_saved.get(annee, {}).get("Impots_taxes",0.0), format="%.3f", key=f"it_{annee}")
+        amortissements = st.number_input("Amortissements", cr_saved.get(annee, {}).get("Amortissements",0.0), format="%.3f", key=f"am_{annee}")
+        provisions = st.number_input("Provisions", cr_saved.get(annee, {}).get("Provisions",0.0), format="%.3f", key=f"prov_{annee}")
+        frais_financiers = st.number_input("Frais financiers", cr_saved.get(annee, {}).get("Frais_financiers",0.0), format="%.3f", key=f"ff_{annee}")
+        produits_financiers = st.number_input("Produits financiers", cr_saved.get(annee, {}).get("Produits_financiers",0.0), format="%.3f", key=f"pf_{annee}")
+        impots_benef = st.number_input("Impôts sur bénéfices", cr_saved.get(annee, {}).get("Impots_benef",0.0), format="%.3f", key=f"ib_{annee}")
+        dividendes = st.number_input("Dividendes", cr_saved.get(annee, {}).get("Dividendes",0.0), format="%.3f", key=f"div_{annee}")
 
         resultats[annee] = calcul_compte_resultat(
             CA, achats, loyer, honoraires, publicite,
@@ -97,6 +75,8 @@ def run():
             frais_financiers, produits_financiers,
             impots_benef, dividendes
         )
+
+    st.session_state["compte_resultat"] = resultats  # ✅ Stockage inter-pages
 
     lignes = [
         "Ventes", "Production", "Chiffre d'affaires",
